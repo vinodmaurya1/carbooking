@@ -160,7 +160,7 @@ export default function BookingPage() {
         );
       },
     },
-  ]);
+  ];
 
   const rowSelection = {
     // selectedRowKeys: id,

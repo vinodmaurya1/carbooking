@@ -5,6 +5,12 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
+
+npm install
+
+```
+```bash
+
 npm run dev
 
 ```
@@ -25,22 +31,16 @@ service cloud.firestore {
 ```
 
 
-#Features implemented
+#Features
+Role-based Authentication: Supports email/password and Google sign-in.
+Admin Panel: Allows admins to add, edit, and delete car listings.
 
-Role-based authentication for email/password and google
-Admin can add,edit,delete car list
-User real time booking any car
 
-# Library used
-
-  #  antd design
-  for use UI Components 
-  #  firebase
-  for make backend 
-  #  redux-persist 
-  for make authentication 
-  #  react-hot-toast 
-  for use notification
+#Libraries Used
+Ant Design (antd): For UI components.
+Firebase: For backend functionality.
+Redux Persist: To manage authentication state.
+React Hot Toast: For notification management.
 
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

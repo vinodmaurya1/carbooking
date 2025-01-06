@@ -143,7 +143,7 @@ export default function Admin() {
         );
       },
     },
-  ]);
+  ];
 
   const rowSelection = {
     // selectedRowKeys: id,

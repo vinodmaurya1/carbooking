@@ -2,33 +2,22 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import AddCarModal from "@/components/modal/AddCarModal";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  PlusCircleOutlined,
-} from "@ant-design/icons";
-import { Card, Table, Switch, Image, Space, Button, Modal, Tag } from "antd";
+import { EyeOutlined} from "@ant-design/icons";
+import { Card, Table, Image, Space, Button,Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store/store";
-import { deleteCar, fetchCars } from "@/redux/stateSlice/carSlice";
-import EditCarModal from "@/components/modal/EditCarModal";
-import { useRouter } from "next/navigation";
-import { fetchBookings, fetchBookingsById } from "@/redux/stateSlice/bookingSlice";
+import { fetchBookingsById } from "@/redux/stateSlice/bookingSlice";
 import BookingModalDetails from "@/components/modal/BookingModalDetails";
 
 export default function BookingPage() {
-  const router = useRouter();
+  // const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   // const [loading, setLoading] = useState(true);
   const [addModal, setAddModal] = useState(false);
   const [bookingData, setBookingData] = useState('');
-  const [editModal, setEditModal] = useState(false);
-  const [addData, setAddData] = useState(null);
   const { bookings, loading } = useSelector((state: RootState) => state.bookings);
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     dispatch(fetchBookingsById(user?.userId));
@@ -91,7 +80,7 @@ export default function BookingPage() {
       title: "Car Image",
       dataIndex: "carImage",
       is_show: true,
-      render: (img, row) => {
+      render: (img) => {
         return (
           <Image
             width={60}
@@ -117,7 +106,7 @@ export default function BookingPage() {
       title: "Type",
       dataIndex: "carType",
       is_show: true,
-      render: (type, row) => {
+      render: (type) => {
         return (
           <div>
               <Tag color="green">{type}</Tag>
@@ -129,7 +118,7 @@ export default function BookingPage() {
       title: "Availability Status",
       dataIndex: "status",
       is_show: true,
-      render: (active, row) => {
+      render: (active) => {
         return (
           <div>
             {active === true ? (
@@ -145,7 +134,7 @@ export default function BookingPage() {
       title: "from Date",
       dataIndex: "fromDate",
       is_show: true,
-      render: (date, row) => {
+      render: (date) => {
         return (
           <div>
               <Tag color="green">{convertDate(date)}</Tag>
@@ -157,7 +146,7 @@ export default function BookingPage() {
       title: "To Date",
       dataIndex: "toDate",
       is_show: true,
-      render: (date, row) => {
+      render: (date) => {
         return (
           <div>
               <Tag color="red">{convertDate(date)}</Tag>
@@ -191,7 +180,7 @@ export default function BookingPage() {
     // },
   };
 
-  function onChangePagination(pagination, filter, sorter) {
+  function onChangePagination(pagination) {
     const { current, pageSize } = pagination;
     setCurrentPage(current);
     setPageSize(pageSize);

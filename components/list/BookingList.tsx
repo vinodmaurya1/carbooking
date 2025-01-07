@@ -1,13 +1,11 @@
 "use client";
 import React, { useEffect } from "react";
 import {
-  Avatar,
   List,
   Card,
   Button,
   Image,
   Col,
-  Descriptions,
   Row,
   Tag,
 } from "antd";
@@ -15,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store/store";
 import { fetchCars } from "@/redux/stateSlice/carSlice";
 
-const { Meta } = Card;
 
 const CarList = () => {
   const { cars, loading } = useSelector((state: RootState) => state.cars);

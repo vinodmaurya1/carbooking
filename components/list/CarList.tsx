@@ -1,13 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Avatar,
   List,
   Card,
   Button,
   Image,
   Col,
-  Descriptions,
   Row,
   Tag,
   Select,
@@ -47,7 +45,7 @@ const CarList = () => {
     dispatch(fetchCars());
   }, [dispatch]);
 
-  const handleBookModal = (data: any) => {
+  const handleBookModal = (data) => {
     if (!isAuthenticated) {
       toast.error("User does not exist!");
     } else {

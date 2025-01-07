@@ -26,16 +26,16 @@ export default function Login() {
   const [successMessage, setSuccessMessage] = useState("");
 
   // Validation logic
-  const validate = () => {
-    const errors = {
-      email: "",
-      password: "",
-      general: "",
-    };
-    if (!formData.email) errors.email = "Email is required";
-    if (!formData.password) errors.password = "Password is required";
-    return errors;
-  };
+  // const validate = () => {
+  //   const errors = {
+  //     email: "",
+  //     password: "",
+  //     general: "",
+  //   };
+  //   if (!formData.email) errors.email = "Email is required";
+  //   if (!formData.password) errors.password = "Password is required";
+  //   return errors;
+  // };
 
   const handleChange = (e) => {
     setFormData({

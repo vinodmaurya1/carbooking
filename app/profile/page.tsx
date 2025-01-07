@@ -3,26 +3,23 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store/store";
-import { auth } from "@/firebase";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
-import toast from "react-hot-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 
-
 const UserProfile = () => {
-  const [profileData, setProfileData] = useState<any>(null);
-  const { user , isAuthenticated} = useSelector((state: RootState) => state.auth);
-const router = useRouter()
+  const [profileData, setProfileData] = useState(null);
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
+  const router = useRouter();
 
   useEffect(() => {
     const checkLogin = async () => {
-
-      if(!isAuthenticated) {
-        router.push("/signin")
-      } 
+      if (!isAuthenticated) {
+        router.push("/signin");
+      }
     };
     checkLogin();
   }, [router]);

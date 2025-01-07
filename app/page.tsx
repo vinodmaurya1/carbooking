@@ -1,9 +1,7 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import BookingList from "../components/BookingList";
 import CarList from "@/components/list/CarList";
 import { Toaster } from "react-hot-toast";
-import { Card, Select, Space } from "antd";
 
 
 export default function Home() {

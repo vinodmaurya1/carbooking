@@ -73,7 +73,7 @@ export default function Admin() {
       title: "Image",
       dataIndex: "carImage",
       is_show: true,
-      render: (img, row) => {
+      render: (img) => {
         return (
           <Image
             width={100}
@@ -94,7 +94,7 @@ export default function Admin() {
       title: "Type",
       dataIndex: "type",
       is_show: true,
-      render: (type, row) => {
+      render: (type) => {
         return (
           <div>
               <Tag color="green">{type}</Tag>
@@ -106,7 +106,7 @@ export default function Admin() {
       title: "Availability Status",
       dataIndex: "status",
       is_show: true,
-      render: (active, row) => {
+      render: (active) => {
         return (
           <div>
             {active === true ? (
@@ -152,7 +152,7 @@ export default function Admin() {
     // },
   };
 
-  function onChangePagination(pagination, filter, sorter) {
+  function onChangePagination(pagination) {
     const { current, pageSize } = pagination;
     setCurrentPage(current);
     setPageSize(pageSize);

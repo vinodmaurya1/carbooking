@@ -38,23 +38,23 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
 
   // Validation logic
-  const validate = () => {
-    const errors = {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      role: "user", // Default role is "user"
-      profileImage: null,
-      general: "",
-    };
-    if (!formData.name) errors.name = "Name is required";
-    if (!formData.email) errors.email = "Email is required";
-    if (!formData.password) errors.password = "Password is required";
-    if (formData.password !== formData.confirmPassword)
-      errors.confirmPassword = "Passwords do not match";
-    return errors;
-  };
+  // const validate = () => {
+  //   const errors = {
+  //     name: "",
+  //     email: "",
+  //     password: "",
+  //     confirmPassword: "",
+  //     role: "user", // Default role is "user"
+  //     profileImage: null,
+  //     general: "",
+  //   };
+  //   if (!formData.name) errors.name = "Name is required";
+  //   if (!formData.email) errors.email = "Email is required";
+  //   if (!formData.password) errors.password = "Password is required";
+  //   if (formData.password !== formData.confirmPassword)
+  //     errors.confirmPassword = "Passwords do not match";
+  //   return errors;
+  // };
 
   const handleChange = (e) => {
     if (e.target.type === "file") {

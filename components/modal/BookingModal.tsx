@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { Button, Col, DatePicker, Descriptions, Image, Modal, Row } from "antd";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "@/firebase";
+import { Timestamp } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { updateCar } from "@/redux/stateSlice/carSlice";
 import { addBooking } from "@/redux/stateSlice/bookingSlice";
 
 export default function BookingModal({ bookModal, handleCancel, car, user, loading }) {

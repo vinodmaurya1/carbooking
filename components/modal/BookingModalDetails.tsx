@@ -1,7 +1,9 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 import React from "react";
 import { Button, Col, Descriptions, Image, Modal, Row, Tag } from "antd";
 
-export default function BookingModalDetails({ BookingModalDetails,bookModal, handleCancel, loading }) {
+export default function BookingModalDetails({ BookingModalDetails,bookModal, handleCancel }) {
   // console.log('BookingModalDetails', BookingModalDetails)
 
   const convertDate = (utcDate) => {

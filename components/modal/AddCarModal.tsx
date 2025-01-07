@@ -2,18 +2,36 @@ import React, { useState } from "react";
 import { Button, Col, Descriptions, Input, Modal, Row, Select, Space, Switch } from "antd";
 import { useDispatch } from "react-redux";
 import { addCar } from "@/redux/stateSlice/carSlice";
+import { AppDispatch } from "@/redux/store/store";
 
-export default function AddCarModal({ addModal, handleCancel }) {
-  const [formData, setFormData] = useState({
+// Define types for the props
+interface AddCarModalProps {
+  addModal: boolean;
+  handleCancel: () => void;
+}
+
+// Define the type for the form data
+interface CarFormData {
+  name: string;
+  price: number;
+  carImage: File | null;  // It could be null if no image is selected
+  status: boolean;
+  type: string;
+  
+}
+
+const AddCarModal: React.FC<AddCarModalProps> = ({ addModal, handleCancel }) => {
+  const [formData, setFormData] = useState<CarFormData>({
     name: "",
     price: 0,
     carImage: null,
     status: true,
     type: "",
   });
-  const dispatch = useDispatch();
 
-  const handleInputChange = (e) => {
+  const dispatch = useDispatch<AppDispatch>(); // Properly type dispatch
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -21,7 +39,7 @@ export default function AddCarModal({ addModal, handleCancel }) {
     }));
   };
 
-  const handleSelectChange = (value) => {console.log(value)
+  const handleSelectChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
       type: value,
@@ -30,13 +48,22 @@ export default function AddCarModal({ addModal, handleCancel }) {
 
   const handleSubmit = () => {
     const { name, price, carImage, status, type } = formData;
-    console.log("Form Data:", formData);
+
     if (!name || !price || !carImage || !type) {
       alert("Please fill all fields!");
       return;
     }
 
-    dispatch(addCar({ name, price, carImage, status, type }));
+    // If carImage is a file, you may need to handle it differently (e.g., upload to a server, then store the URL)
+    const carData = {
+      name,
+      price,
+      carImage, // Store the image filename or URL as string
+      status,
+      type,
+    };
+
+    dispatch(addCar(carData)); // Dispatch the action correctly
     setFormData({
       name: "",
       type: "",
@@ -111,4 +138,6 @@ export default function AddCarModal({ addModal, handleCancel }) {
       </Row>
     </Modal>
   );
-}
+};
+
+export default AddCarModal;

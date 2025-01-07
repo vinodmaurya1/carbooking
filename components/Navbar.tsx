@@ -113,7 +113,7 @@ export default function Navbar() {
                     <Avatar
                       src={
                         <img
-                          src={user?.profilePicture}
+                          src={user?.profilePicture || ""}
                           style={{ width: "20px", height: "20px" }}
                           alt="avatar"
                         />
@@ -225,7 +225,7 @@ export default function Navbar() {
                     <Avatar
                       src={
                         <img
-                          src={user?.profilePicture}
+                          src={user?.profilePicture || ''}
                           style={{ width: "20px", height: "20px" }}
                           alt="avatar"
                         />

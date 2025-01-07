@@ -8,8 +8,17 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 
+
+interface UserProfile {
+  userId: string | null;
+  name: string | null;
+  email: string | null;
+  profilePicture: string | null;
+  role: string | null;
+}
+
 const UserProfile = () => {
-  const [profileData, setProfileData] = useState(null);
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );

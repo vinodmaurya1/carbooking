@@ -10,8 +10,7 @@ interface Car {
   carImage: string;
   type: string;
   status: boolean;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  
 }
 
 interface CarState {
@@ -38,7 +37,7 @@ export const fetchCars = createAsyncThunk("cars/fetchCars", async () => {
 // Thunk to add a car
 export const addCar = createAsyncThunk(
   "cars/addCar",
-  async ({ name, price, carImage,type, status }: { name: string;type:string, price: number; carImage: File; status: boolean }) => {
+  async ({ name, price, carImage,type, status }: { name: string;type:string, price: number; carImage: File; status: boolean  }) => {
     const base64Image = await convertToBase64(carImage);
     const carsRef = collection(db, "cars");
     await addDoc(carsRef, {
@@ -51,15 +50,15 @@ export const addCar = createAsyncThunk(
       updatedAt: Timestamp.now(),
     }).then((res)=>console.log('res' , res)).catch((err)=>console.log("err",err));
 
-    return { name, price, carImage: base64Image, status , type};
+    return {id: carsRef.id, name, price, carImage: base64Image, status , type};
   }
 );
 
 
 export const updateCar = createAsyncThunk(
     "cars/updateCar",
-    async ({ id, name, price, carImage,type, status }: { id: string; name: string; price: number; carImage?: File | null; status: boolean }) => {
-      console.log("up-hndl" , id, name, price, carImage,type, status)
+    async ({ id, name, price, carImage,type, status }: { id: string; name: string; price: number; carImage?: File | null; status: boolean;type: string; }) => {
+      // console.log("up-hndl" , id, name, price, carImage,type, status)
         const carRef = doc(db, "cars", id);
       const updatedData: any = {
         name,

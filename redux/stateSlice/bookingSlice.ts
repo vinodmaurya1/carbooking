@@ -16,8 +16,6 @@ interface Booking {
   status: boolean;
   toDate: string;
   fromDate: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
 }
 
 // Define the state structure
@@ -81,8 +79,32 @@ export const fetchBookingsById = createAsyncThunk(
   }
 );
 
+interface BookingData {
+  username: string;
+  userId: string;
+  carId: string;
+  price: number;
+  totalPrice: number;
+  carName: string;
+  carImage: string;
+  carType: string;
+  status: boolean;
+  toDate: string;
+  fromDate: string;
+}
+
+// Define the return type
+interface BookingResponse extends BookingData {
+  id: string;
+}
+
+
 // Thunk to add a booking
-export const addBooking = createAsyncThunk(
+export const addBooking = createAsyncThunk<
+  BookingResponse, // Return type of the action
+  BookingData,     // Argument type of the action
+  { rejectValue: string } // Reject value type
+>(
   "bookings/addBooking",
   async (
     {
@@ -143,7 +165,7 @@ export const addBooking = createAsyncThunk(
         carName,
         carImage,
         carType,
-        status: false, // Mark car as booked
+        status,
         fromDate,
         toDate,
         createdAt: Timestamp.now(),

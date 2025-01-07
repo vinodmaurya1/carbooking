@@ -142,6 +142,7 @@ export const getAllUsers = async () => {
 
     const users = snapshot.docs.map((doc) => ({
       id: doc.id,
+      role: doc.role,
       ...doc.data(),
     }));
     return users;

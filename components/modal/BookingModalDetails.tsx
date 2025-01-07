@@ -1,34 +1,49 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-
 import React from "react";
 import { Button, Col, Descriptions, Image, Modal, Row, Tag } from "antd";
 
-export default function BookingModalDetails({ BookingModalDetails,bookModal, handleCancel }) {
-  // console.log('BookingModalDetails', BookingModalDetails)
+type BookingModalDetailsProps = {
+  BookingModalDetails: {
+    carImage: string;
+    carName: string;
+    username: string;
+    price: number;
+    totalPrice: number;
+    carType: string;
+    fromDate: string;
+    toDate: string;
+    status: boolean;
+  };
+  bookModal: boolean;
+  handleCancel: () => void;
+};
 
-  const convertDate = (utcDate) => {
-
+export default function BookingModalDetails({
+  BookingModalDetails,
+  bookModal,
+  handleCancel,
+}: BookingModalDetailsProps) {
+  const convertDate = (utcDate: string): string => {
     try {
-      console.log('date-',utcDate)
+      console.log("date-", utcDate);
       const date = new Date(utcDate);
-  
+
       const newdate = new Intl.DateTimeFormat("en-IN", {
         year: "numeric",
         month: "long",
         day: "numeric",
         timeZone: "Asia/Kolkata",
       }).format(date);
-  
+
       return newdate;
-      
     } catch (error) {
-      console.log('date-convert',error)
+      console.log("date-convert", error);
+      return "Invalid Date";
     }
   };
 
   return (
     <Modal
-      visible={bookModal}
+      open={bookModal} // Updated `visible` to `open` for Ant Design v5
       title="Booking Details"
       onCancel={handleCancel}
       footer={[
@@ -59,23 +74,29 @@ export default function BookingModalDetails({ BookingModalDetails,bookModal, han
               ₹{BookingModalDetails?.price}
             </Descriptions.Item>
             <Descriptions.Item span={3} label="Type">
-            <Tag color="green">{BookingModalDetails?.carType}</Tag>
+              <Tag color="green">{BookingModalDetails?.carType}</Tag>
             </Descriptions.Item>
             <Descriptions.Item span={3} label="Total Price">
-             {BookingModalDetails?.price} × {BookingModalDetails?.totalPrice/BookingModalDetails?.price} = ₹{BookingModalDetails?.totalPrice}
+              {BookingModalDetails?.price} ×{" "}
+              {BookingModalDetails?.totalPrice / BookingModalDetails?.price} = ₹
+              {BookingModalDetails?.totalPrice}
             </Descriptions.Item>
             <Descriptions.Item span={3} label="From Date">
-            <Tag color="green">{convertDate(`${BookingModalDetails?.fromDate}`)}</Tag>
+              <Tag color="green">
+                {convertDate(`${BookingModalDetails?.fromDate}`)}
+              </Tag>
             </Descriptions.Item>
             <Descriptions.Item span={3} label="To Date">
-            <Tag color="red">{convertDate(`${BookingModalDetails?.toDate}`)}</Tag>
+              <Tag color="red">
+                {convertDate(`${BookingModalDetails?.toDate}`)}
+              </Tag>
             </Descriptions.Item>
             <Descriptions.Item span={3} label="Status">
-            {BookingModalDetails?.status === true ? (
-              <Tag color="blue">Available</Tag>
-            ) : (
-              <Tag color="error">Booked</Tag>
-            )}
+              {BookingModalDetails?.status === true ? (
+                <Tag color="blue">Available</Tag>
+              ) : (
+                <Tag color="error">Booked</Tag>
+              )}
             </Descriptions.Item>
           </Descriptions>
         </Col>

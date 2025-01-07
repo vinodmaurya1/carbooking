@@ -9,6 +9,16 @@ import { Button } from "antd";
 import { loginSuccess } from "@/redux/stateSlice/authSlice";
 import { useDispatch } from "react-redux";
 
+interface Errors {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+  profileImage: string | null;
+  general: string;
+}
+
 export default function Signup() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -22,7 +32,7 @@ export default function Signup() {
     profileImage: null,
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<Partial<Errors>>({
     name: "",
     email: "",
     password: "",
@@ -34,29 +44,21 @@ export default function Signup() {
   const [successMessage, setSuccessMessage] = useState("");
 
   // Validation logic
-  // const validate = () => {
-  //   const errors = {
-  //     name: "",
-  //     email: "",
-  //     password: "",
-  //     confirmPassword: "",
-  //     role: "user", // Default role is "user"
-  //     profileImage: null,
-  //     general: "",
-  //   };
-  //   if (!formData.name) errors.name = "Name is required";
-  //   if (!formData.email) errors.email = "Email is required";
-  //   if (!formData.password) errors.password = "Password is required";
-  //   if (formData.password !== formData.confirmPassword)
-  //     errors.confirmPassword = "Passwords do not match";
-  //   return errors;
-  // };
+  const validate = () => {
+    const errors: Partial<Errors> = {};
+    if (!formData.name) errors.name = "Name is required";
+    if (!formData.email) errors.email = "Email is required";
+    if (!formData.password) errors.password = "Password is required";
+    if (formData.password !== formData.confirmPassword)
+      errors.confirmPassword = "Passwords do not match";
+    return errors;
+  };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.type === "file") {
       setFormData({
         ...formData,
-        [e.target.name]: e.target.files[0],
+        [e.target.name]: e.target.files ? e.target.files[0] : null,
       });
     } else {
       setFormData({
@@ -66,24 +68,22 @@ export default function Signup() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // const validationErrors = validate();
-    // if (Object.keys(validationErrors).length > 0) {
-    //   setErrors(validationErrors);
-    //   return;
-    // }
-    // setErrors({});
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     setLoading(true);
-    // console.log("Form data:", formData);
-    const role = "user";
+
     try {
       await signUpWithEmailPassword(
         formData.email,
         formData.password,
         formData.name,
         formData.profileImage,
-        role
+        formData.role
       );
       setSuccessMessage("Signup successful! Redirecting to login...");
       toast.success("Signup successful!");
@@ -91,9 +91,8 @@ export default function Signup() {
       router.push("/signin");
     } catch (error) {
       setLoading(false);
-      toast.error(error.message);
-      console.log("Signup error:", error);
-      setErrors({ general: error.message });
+      toast.error(error instanceof Error ? error.message : "Signup failed");
+      setErrors({ general: error instanceof Error ? error.message : "Signup failed"});
     }
   };
 
@@ -115,7 +114,7 @@ export default function Signup() {
       router.push("/");
     } catch (error) {
       setLoading(false);
-      toast.error(error.message || "Google Sign-Up failed");
+      toast.error(error instanceof Error ? error.message : "Google Sign-Up failed");
     }
   };
 
@@ -278,15 +277,6 @@ export default function Signup() {
             Sign Up
           </Button>
           <div className="text-center mt-6">
-          <p className="text-gray-600">
-              Become an Admin{" "}
-              <Link
-                href="/admin_signup"
-                className="text-blue-600 hover:underline font-medium"
-              >
-                Sign Up
-              </Link>
-            </p>
             <p className="text-gray-600">
               Already have an account?{" "}
               <Link

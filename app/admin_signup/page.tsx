@@ -25,12 +25,23 @@ export default function Signup() {
     profileImage: null,
   });
 
-  const [errors, setErrors] = useState({
+  interface Errors {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    role: string;
+    profileImage: string | null;
+    general: string;
+  }
+
+
+  const [errors, setErrors] = useState<Partial<Errors>>({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: "user", // Default role is "user"
+    role: "user",
     profileImage: null,
     general: "",
   });
@@ -56,11 +67,12 @@ export default function Signup() {
   //   return errors;
   // };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.type === "file") {
+      const file = e.target.files ? e.target.files[0] : null;
       setFormData({
         ...formData,
-        [e.target.name]: e.target.files[0],
+        [e.target.name]: file, 
       });
     } else {
       setFormData({
@@ -70,7 +82,14 @@ export default function Signup() {
     }
   };
 
-  const handleSubmit = async (e) => {
+
+  interface User {
+    id: string;
+    role: string;  
+  }
+  
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     // const validationErrors = validate();
     // if (Object.keys(validationErrors).length > 0) {
@@ -84,7 +103,7 @@ export default function Signup() {
 
     try {
       const users = await getAllUsers();
-      const adminUsers = users.filter((user) => user.role === "admin");
+      const adminUsers = users.filter((user) => user?.role === "admin");
 
       if (adminUsers.length > 0) {
         toast.error("Admin already registered");
@@ -108,8 +127,8 @@ export default function Signup() {
     } catch (error) {
       setLoading(false);
       console.error("Signup error:", error);
-      toast.error("Signup failed: " + error.message);
-      setErrors({ general: error.message });
+      toast.error("Signup failed: " + (error instanceof Error ? error.message : "Unknown error"));
+      setErrors({ general: error instanceof Error ? error.message : "Unknown error" });
     }
   };
 
@@ -132,7 +151,7 @@ export default function Signup() {
       router.push("/");
     } catch (error) {
       setLoading(false);
-      toast.error(error.message || "Google Sign-Up failed");
+      toast.error(error instanceof Error ? error.message : "Google Sign-Up failed");
     }
   };
 

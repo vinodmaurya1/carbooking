@@ -15,14 +15,26 @@ import { AppDispatch, RootState } from "@/redux/store/store";
 import { deleteCar, fetchCars } from "@/redux/stateSlice/carSlice";
 import EditCarModal from "@/components/modal/EditCarModal";
 import { useRouter } from "next/navigation";
+import { TablePaginationConfig } from 'antd';
+
+interface Car {
+  id: string;
+  serial?: number;
+  name: string;
+  carImage: string;
+  price: number;
+  type: string;
+  status: boolean;
+}
 
 export default function Admin() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  // const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [addModal, setAddModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  const [addData, setAddData] = useState(null);
+  const [addData, setAddData] = useState<Car | null>(null);
   const { cars, loading } = useSelector((state: RootState) => state.cars);
   const { user } = useSelector((state: RootState) => state.auth);
 
@@ -32,35 +44,30 @@ export default function Admin() {
 
   useEffect(() => {
     console.log("car-new", cars);
-  }, []);
-
+  }, [cars]);
 
   useEffect(() => {
     const checkAdmin = async () => {
       const admin = user;
 
-      if(admin?.role !== "admin" ) {
-        router.push("/signin")
-      } 
+      if (admin?.role !== "admin") {
+        router.push("/signin");
+      }
     };
     checkAdmin();
-  }, [router]);
-
+  }, [router, user]);
 
   function handleDeleteCar(id: string) {
     console.log("dlt", id);
     dispatch(deleteCar(id));
   }
 
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const [pageSize, setPageSize] = useState(5); // Track page size
-  
   const columns = [
     {
       title: "Serial No.",
       dataIndex: "serial",
       is_show: true,
-      render: (_, __, index) => {
+      render: (_: Car, __: unknown, index: number) => {
         return <div>{(currentPage - 1) * pageSize + index + 1}</div>;
       },
     },
@@ -73,7 +80,7 @@ export default function Admin() {
       title: "Image",
       dataIndex: "carImage",
       is_show: true,
-      render: (img) => {
+      render: (img: string) => {
         return (
           <Image
             width={100}
@@ -94,10 +101,10 @@ export default function Admin() {
       title: "Type",
       dataIndex: "type",
       is_show: true,
-      render: (type) => {
+      render: (type: string) => {
         return (
           <div>
-              <Tag color="green">{type}</Tag>
+            <Tag color="green">{type}</Tag>
           </div>
         );
       },
@@ -106,10 +113,10 @@ export default function Admin() {
       title: "Availability Status",
       dataIndex: "status",
       is_show: true,
-      render: (active) => {
+      render: (active: boolean) => {
         return (
           <div>
-            {active === true ? (
+            {active ? (
               <Tag color="blue">Available</Tag>
             ) : (
               <Tag color="error">Booked</Tag>
@@ -122,21 +129,21 @@ export default function Admin() {
       title: "Options",
       dataIndex: "options",
       is_show: true,
-      render: (_, row) => {
+      render: (_: unknown, row: Car) => {
         return (
           <Space>
             <Button
               type="primary"
               icon={<EditOutlined />}
               onClick={() => {
-                setAddData(row);
+                setAddData(row); // Now row is of type Car
                 setEditModal(true);
               }}
             />
             <Button
               icon={<DeleteOutlined />}
               onClick={() => {
-                handleDeleteCar(row?.id);
+                handleDeleteCar(row.id); // Now row is of type Car, accessing row.id
               }}
             />
           </Space>
@@ -152,12 +159,12 @@ export default function Admin() {
     // },
   };
 
-  function onChangePagination(pagination) {
-    const { current, pageSize } = pagination;
+  // Pagination handler with types
+  function onChangePagination(pagination: TablePaginationConfig) {
+    const { current = 1, pageSize = 10 } = pagination;
     setCurrentPage(current);
     setPageSize(pageSize);
   }
-  
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -178,13 +185,10 @@ export default function Admin() {
           }
         >
           <Table
-            // locale={{
-            //   emptyText: <RiveResult />,
-            // }}
             scroll={{ x: true }}
             rowSelection={rowSelection}
             loading={loading}
-            columns={columns?.filter((item) => item.is_show)}
+            columns={columns.filter((item) => item.is_show)}
             dataSource={cars}
             pagination={{
               pageSize,
@@ -192,11 +196,6 @@ export default function Admin() {
               current: currentPage,
               showSizeChanger: true,
               pageSizeOptions: ["10", "20", "50", "100"],
-              // pageSize: params.perPage,
-              // page: activeMenu.data?.page || 1,
-              // total: meta.total,
-              // defaultCurrent: activeMenu.data?.page,
-              // current: activeMenu.data?.page,
             }}
             onChange={onChangePagination}
             rowKey={(record) => record.id}
@@ -205,8 +204,7 @@ export default function Admin() {
         <AddCarModal
           addModal={addModal}
           handleCancel={() => setAddModal(false)}
-          loading={loading}
-          />
+        />
         <EditCarModal
           loading={loading}
           car={addData}

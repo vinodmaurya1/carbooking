@@ -1,20 +1,54 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { Button, Col, DatePicker, Descriptions, Image, Modal, Row } from "antd";
 import { Timestamp } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { addBooking } from "@/redux/stateSlice/bookingSlice";
+import { AppDispatch } from "@/redux/store/store";
+import { fetchCars } from "@/redux/stateSlice/carSlice";
 
-export default function BookingModal({ bookModal, handleCancel, car, user, loading }) {
-  // console.log('car', car)
-  const [selectedDates, setSelectedDates] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const dispatch = useDispatch();
-  const handleDateChange = (dates) => {
-    if (dates && dates.length === 2) {
+// Define the types for car and user (you can adjust these as needed)
+interface Car {
+  id: string;
+  name: string;
+  carImage: string;
+  type: string;
+  price: number;
+}
+interface User {
+  userId: string | null;
+  name: string | null;
+  email: string | null;
+  profilePicture: string | null;
+  role: string | null;
+}
+
+
+interface BookingModalProps {
+  bookModal: boolean;
+  handleCancel: () => void;
+  car: Car | null; 
+  user: User;
+  loading: boolean;
+}
+
+
+export default function BookingModal({
+  bookModal,
+  handleCancel,
+  car,
+  user,
+  loading,
+}: BookingModalProps) {
+  const [selectedDates, setSelectedDates] = useState<any[]>([]); // Use 'any[]' for now if you expect a date range
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleDateChange = (dates: any) => {
+    if (dates && dates.length === 2 && car?.price !== undefined) {
       const [from, to] = dates;
       const days = to.diff(from, "days") + 1; // Including the start date
-      const total = days * car.price; // Calculate total price
+      const total = days * car?.price; // Calculate total price
       setSelectedDates(dates);
       setTotalPrice(total);
     } else {
@@ -24,49 +58,33 @@ export default function BookingModal({ bookModal, handleCancel, car, user, loadi
   };
 
   const handleSubmit = async () => {
-    if (!selectedDates.length || !user || !car) {
-      alert("Please fill all fields!");
-      return;
-    }
-
-    const [fromDate, toDate] = selectedDates;
-    console.log('dates' , fromDate.toISOString() , toDate.toISOString())
-
     try {
-      const bookingData = {
-        username: user?.name || "Anonymous", // Fallback to "Anonymous" if `user.name` is not defined
-        userId: user?.userId,
-        carId: car?.id,
-        carName: car.name,
-        carImage: car.carImage,
-        carType: car.type,
-        price: car.price,
-        totalPrice,
-        fromDate: fromDate.toISOString(),
-        toDate: toDate.toISOString(),
-        status: false,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      };
-
-      dispatch(addBooking(bookingData)).unwrap().then((result) => {
-    console.log("Booking successful:", result);
-      toast.success("Booking saved successfully")
-      handleCancel();
-  })
-  .catch((error) => {
-    console.error("Booking failed:", error);
-    toast.error(error || "An error occurred"); // Example for showing a toast
-  });
-
-      // await  dispatch(updateCar({ id:car?.id, name:car?.name, price:car.price, carImage: car?.carImage, status: false, type:car?.type }));
-
-
+      const bookingResult = await dispatch(
+        addBooking({
+          username: user?.name || "Anonymous",
+          userId: user?.userId || "",
+          carId: car?.id || "",
+          price: car?.price || 0,
+          totalPrice,
+          carName: car?.name || "",
+          carImage: car?.carImage || "",
+          carType: car?.type || "",
+          status: false,
+          fromDate: new Date().toISOString(),
+          toDate: new Date().toISOString(),
+        })
+      ).unwrap(); // Unwraps the result or throws an error
+  
+      console.log("Booking successful:", bookingResult);
+      toast.success("Booking saved successfully!");
+      dispatch(fetchCars());
+      handleCancel(); // Close modal on success
     } catch (error) {
-      toast.error("Failed to save booking")
-      console.error("Failed to save booking:", error);
+      console.error("Booking failed:", error);
+      toast.error(error || "Failed to save booking.");
     }
   };
+  
 
   const { RangePicker } = DatePicker;
 

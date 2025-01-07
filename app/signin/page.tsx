@@ -13,53 +13,59 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/stateSlice/authSlice";
 import { Button } from "antd";
 
+
+
+
+interface Errors {
+  email: string;
+  password: string;
+  general: string;
+}
+
 export default function Login() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<Partial<Errors>>({
     email: "",
     password: "",
     general: "",
   });
   const [successMessage, setSuccessMessage] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   // Validation logic
-  // const validate = () => {
-  //   const errors = {
-  //     email: "",
-  //     password: "",
-  //     general: "",
-  //   };
-  //   if (!formData.email) errors.email = "Email is required";
-  //   if (!formData.password) errors.password = "Password is required";
-  //   return errors;
-  // };
+  const validate = () => {
+    const errors = {
+      email: "",
+      password: "",
+      general: "",
+    };
+    if (!formData.email) errors.email = "Email is required";
+    if (!formData.password) errors.password = "Password is required";
+    return errors;
+  };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // const validationErrors = validate();
-    // if (Object.keys(validationErrors).length > 0) {
-    //   setErrors(validationErrors);
-    //   return;
-    // }
-    // setErrors({});
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
 
     try {
-      // Use Firebase Authentication to log in
       setLoading(true);
-      const user = await loginWithEmailPassword(
-        formData.email,
-        formData.password
-      );
+      const user = await loginWithEmailPassword(formData.email, formData.password);
       const role = await getUserByUID(user.uid);
 
       dispatch(
@@ -78,8 +84,8 @@ export default function Login() {
       toast.success("Login successful!");
     } catch (error) {
       setLoading(false);
-      setErrors({ general: error.message });
-      toast.error(error?.message);
+      setErrors({ general: error instanceof Error ? error.message : "Unknown error" });
+      toast.error(error instanceof Error ? error.message : "Login failed");
     }
   };
 
@@ -102,7 +108,7 @@ export default function Login() {
       router.push("/");
     } catch (error) {
       setLoading(false);
-      toast.error(error.message || "Google Sign-Up failed");
+      toast.error(error instanceof Error ? error.message : "Google Sign-Up failed");
     }
   };
 
@@ -170,17 +176,26 @@ export default function Login() {
             >
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter your password"
-            />
+            <div className="relative">
+              <input
+                type={passwordVisible ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full px-4 py-2 border rounded-lg ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setPasswordVisible(!passwordVisible)}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >
+                {passwordVisible ? "Hide" : "Show"}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-red-500 text-sm">{errors.password}</p>
             )}
@@ -194,6 +209,7 @@ export default function Login() {
           >
             Login
           </Button>
+
           <div className="text-center mt-6">
             <p className="text-gray-600">
               Become an Admin{" "}

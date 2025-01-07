@@ -2,16 +2,43 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Descriptions, Image, Input, Modal, Row, Select, Switch } from "antd";
 import { useDispatch } from "react-redux";
 import { updateCar } from "@/redux/stateSlice/carSlice";
+import { AppDispatch } from "@/redux/store/store";
 
-export default function EditCarModal({ editModal, handleCancel, car , loading }) {
-  const [formData, setFormData] = useState({
+// Define the props type
+type EditCarModalProps = {
+  editModal: boolean;
+  handleCancel: () => void;
+  car: {
+    id: string;
+    name: string;
+    price: number;
+    carImage: string;
+    status: boolean;
+    type: string;
+  } | null; // `null` in case the `car` prop is not available
+  loading: boolean;
+};
+
+export default function EditCarModal({
+  editModal,
+  handleCancel,
+  car,
+  loading,
+}: EditCarModalProps) {
+  const [formData, setFormData] = useState<{
+    name: string;
+    price: number;
+    carImage: File | null;
+    status: boolean; // Change `status` to `boolean` instead of `true`
+    type: string;
+  }>({
     name: car?.name || "",
     price: car?.price || 0,
     carImage: null,
-    status: car?.status || true,
+    status: car?.status || true, // default to true but now typed as boolean
     type: car?.type || "",
   });
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (car) {
@@ -25,7 +52,7 @@ export default function EditCarModal({ editModal, handleCancel, car , loading })
     }
   }, [car]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -33,7 +60,7 @@ export default function EditCarModal({ editModal, handleCancel, car , loading })
     }));
   };
 
-  const handleSelectChange = (value) => {
+  const handleSelectChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
       type: value,
@@ -43,19 +70,29 @@ export default function EditCarModal({ editModal, handleCancel, car , loading })
   const handleSubmit = () => {
     const { name, price, carImage, status, type } = formData;
     console.log("formData:", formData);
+    
 
-    if ( !name || !price || (!carImage && !car?.carImage) || !type) {
+    if (!name || !price || (!carImage && !car?.carImage) || !type) {
       alert("Please fill all fields!");
       return;
     }
 
-    dispatch(updateCar({ id:car?.id, name, price, carImage: carImage || car?.carImage, status, type }));
+    dispatch(
+      updateCar({
+        id: car?.id || "",
+        name,
+        price,
+        carImage: carImage instanceof File ? carImage : null,
+        status,
+        type,
+      })
+    );
     handleCancel();
   };
 
   return (
     <Modal
-      visible={editModal}
+      open={editModal} // `visible` updated to `open` for Ant Design v5 compatibility
       title="Edit Car"
       onCancel={handleCancel}
       footer={[

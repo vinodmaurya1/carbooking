@@ -2,8 +2,8 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { EyeOutlined} from "@ant-design/icons";
-import { Card, Table, Image, Space, Button,Tag } from "antd";
+import { EyeOutlined } from "@ant-design/icons";
+import { Card, Table, Image, Space, Button, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store/store";
@@ -11,63 +11,48 @@ import { fetchBookingsById } from "@/redux/stateSlice/bookingSlice";
 import BookingModalDetails from "@/components/modal/BookingModalDetails";
 
 export default function BookingPage() {
-  // const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  // const [loading, setLoading] = useState(true);
   const [addModal, setAddModal] = useState(false);
-  const [bookingData, setBookingData] = useState('');
+  const [bookingData, setBookingData] = useState<any>(null); // Updated to accept an object
   const { bookings, loading } = useSelector((state: RootState) => state.bookings);
   const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    dispatch(fetchBookingsById(user?.userId));
-  }, [dispatch]);
+    if (user?.userId) {
+      dispatch(fetchBookingsById(user.userId));
+    }
+  }, [dispatch, user]);
 
   useEffect(() => {
     console.log("booking-user", bookings);
-  }, []);
+  }, [bookings]); // Ensure that bookings are logged correctly when they change
 
-
-  const convertDate = (utcDate) => {
+  const convertDate = (utcDate: string): string => { // Explicit return type
     const date = new Date(utcDate);
-
     const newdate = new Intl.DateTimeFormat("en-IN", {
       year: "numeric",
       month: "long",
       day: "numeric",
       timeZone: "Asia/Kolkata",
     }).format(date);
-
     return newdate;
   };
 
-  // useEffect(() => {
-  //   const checkAdmin = async () => {
-  //     const admin = user;
-
-  //     if(admin?.role !== "admin" ) {
-  //       router.push("/signin")
-  //     } 
-  //   };
-  //   checkAdmin();
-  // }, [router]);
-
-
-  function handleModalData(data: string) {
+  function handleModalData(data: any) { // Typing as `any` since you're passing an object
     console.log("data", data);
-    setBookingData(data)
-    setAddModal(true)
+    setBookingData(data); // Set the data object
+    setAddModal(true);
   }
 
   const [currentPage, setCurrentPage] = useState(1); // Track current page
   const [pageSize, setPageSize] = useState(5); // Track page size
-  
+
   const columns = [
     {
       title: "Serial No.",
       dataIndex: "serial",
       is_show: true,
-      render: (_, __, index) => {
+      render: (_: string, __: unknown, index: number) => {
         return <div>{(currentPage - 1) * pageSize + index + 1}</div>;
       },
     },
@@ -80,7 +65,7 @@ export default function BookingPage() {
       title: "Car Image",
       dataIndex: "carImage",
       is_show: true,
-      render: (img) => {
+      render: (img: string) => {
         return (
           <Image
             width={60}
@@ -106,10 +91,10 @@ export default function BookingPage() {
       title: "Type",
       dataIndex: "carType",
       is_show: true,
-      render: (type) => {
+      render: (type: string) => {
         return (
           <div>
-              <Tag color="green">{type}</Tag>
+            <Tag color="green">{type}</Tag>
           </div>
         );
       },
@@ -118,7 +103,7 @@ export default function BookingPage() {
       title: "Availability Status",
       dataIndex: "status",
       is_show: true,
-      render: (active) => {
+      render: (active: boolean) => {
         return (
           <div>
             {active === true ? (
@@ -131,13 +116,13 @@ export default function BookingPage() {
       },
     },
     {
-      title: "from Date",
+      title: "From Date",
       dataIndex: "fromDate",
       is_show: true,
-      render: (date) => {
+      render: (date: string) => {
         return (
           <div>
-              <Tag color="green">{convertDate(date)}</Tag>
+            <Tag color="green">{convertDate(date)}</Tag>
           </div>
         );
       },
@@ -146,10 +131,10 @@ export default function BookingPage() {
       title: "To Date",
       dataIndex: "toDate",
       is_show: true,
-      render: (date) => {
+      render: (date: string) => {
         return (
           <div>
-              <Tag color="red">{convertDate(date)}</Tag>
+            <Tag color="red">{convertDate(date)}</Tag>
           </div>
         );
       },
@@ -158,7 +143,7 @@ export default function BookingPage() {
       title: "Options",
       dataIndex: "options",
       is_show: true,
-      render: (_, row) => {
+      render: (_:string, row: any) => {
         return (
           <Space>
             <Button
@@ -173,30 +158,19 @@ export default function BookingPage() {
     },
   ];
 
-  const rowSelection = {
-    // selectedRowKeys: id,
-    // onChange: (key) => {
-    //   setId(key);
-    // },
-  };
-
-  function onChangePagination(pagination) {
+  function onChangePagination(pagination: any) { // Typing for pagination
     const { current, pageSize } = pagination;
     setCurrentPage(current);
     setPageSize(pageSize);
   }
-  
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow bg-gray-100 items-center">
-        <Card
-          title="Booking List"
-        >
+        <Card title="Booking List">
           <Table
             scroll={{ x: true }}
-            rowSelection={rowSelection}
             loading={loading}
             columns={columns?.filter((item) => item.is_show)}
             dataSource={bookings}
@@ -215,8 +189,7 @@ export default function BookingPage() {
           BookingModalDetails={bookingData}
           bookModal={addModal}
           handleCancel={() => setAddModal(false)}
-          loading={loading}
-          />
+        />
       </main>
       <Footer />
     </div>

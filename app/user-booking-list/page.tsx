@@ -27,7 +27,7 @@ export default function BookingPage() {
   }, []);
 
 
-  const convertDate = (utcDate) => {
+  const convertDate = (utcDate:string) => {
     const date = new Date(utcDate);
 
     const newdate = new Intl.DateTimeFormat("en-IN", {
@@ -60,7 +60,7 @@ export default function BookingPage() {
       title: "Serial No.",
       dataIndex: "serial",
       is_show: true,
-      render: (_, __, index) => {
+      render: (_: string, __: unknown, index: number) => {
         return <div>{(currentPage - 1) * pageSize + index + 1}</div>;
       },
     },
@@ -73,7 +73,7 @@ export default function BookingPage() {
       title: "Car Image",
       dataIndex: "carImage",
       is_show: true,
-      render: (img) => {
+      render: (img:string) => {
         return (
           <Image
             width={60}
@@ -99,7 +99,7 @@ export default function BookingPage() {
       title: "Type",
       dataIndex: "carType",
       is_show: true,
-      render: (type) => {
+      render: (type:string) => {
         return (
           <div>
               <Tag color="green">{type}</Tag>
@@ -111,7 +111,7 @@ export default function BookingPage() {
       title: "Availability Status",
       dataIndex: "status",
       is_show: true,
-      render: (active) => {
+      render: (active:boolean) => {
         return (
           <div>
             {active === true ? (
@@ -127,7 +127,7 @@ export default function BookingPage() {
       title: "from Date",
       dataIndex: "fromDate",
       is_show: true,
-      render: (date) => {
+      render: (date:string) => {
         return (
           <div>
               <Tag color="green">{convertDate(date)}</Tag>
@@ -139,7 +139,7 @@ export default function BookingPage() {
       title: "To Date",
       dataIndex: "toDate",
       is_show: true,
-      render: (date) => {
+      render: (date:string) => {
         return (
           <div>
               <Tag color="red">{convertDate(date)}</Tag>
@@ -156,7 +156,7 @@ export default function BookingPage() {
     // },
   };
 
-  function onChangePagination(pagination) {
+  function onChangePagination(pagination:any) {
     const { current, pageSize } = pagination;
     setCurrentPage(current);
     setPageSize(pageSize);

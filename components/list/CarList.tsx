@@ -19,6 +19,16 @@ import { fetchCars } from "@/redux/stateSlice/carSlice";
 import BookingModal from "../modal/BookingModal";
 import toast from "react-hot-toast";
 
+// Type for the car data
+interface Car {
+  id: string;
+  name: string;
+  type: string;
+  price: number;
+  status: boolean;
+  carImage: string;
+}
+
 const marks = {
   1000: "₹1000",
   5000: "₹5000",
@@ -31,7 +41,7 @@ const CarList = () => {
     (state: RootState) => state.auth
   );
   const [bookModal, setBookModal] = useState(false);
-  const [carData, setCarData] = useState(null);
+  const [carData, setCarData] = useState<Car | null>(null); // Updated to accept a Car object or null
   const [filters, setFilters] = useState({
     type: null,
     availability: null,
@@ -45,16 +55,16 @@ const CarList = () => {
     dispatch(fetchCars());
   }, [dispatch]);
 
-  const handleBookModal = (data) => {
+  const handleBookModal = (data: Car) => {
     if (!isAuthenticated) {
       toast.error("User does not exist!");
     } else {
       setBookModal(true);
-      setCarData(data);
+      setCarData(data); // Setting the selected car object
     }
   };
 
-  const handleFilterChange = (field: string, value) => {
+  const handleFilterChange = (field: string, value: any) => {
     setFilters((prev) => ({
       ...prev,
       [field]: value,
@@ -144,7 +154,7 @@ const CarList = () => {
       </Card>
 
       <List
-      className="my-3"
+        className="my-3"
         grid={{
           gutter: 16,
           xs: 1,
@@ -164,7 +174,6 @@ const CarList = () => {
               cover={
                 <Image
                   height={180}
-                  // width={100}
                   src={item.carImage}
                   placeholder
                   style={{ borderRadius: 4, objectFit: "cover" }}
@@ -176,7 +185,7 @@ const CarList = () => {
                   color={item.status === true ? "primary" : "danger"}
                   variant="outlined"
                   disabled={!item.status}
-                  onClick={() => handleBookModal(item)}
+                  onClick={() => handleBookModal(item)} // Passing the whole car object
                 >
                   {item.status === true ? "Book Now" : "Booked"}
                 </Button>,
@@ -213,13 +222,15 @@ const CarList = () => {
         )}
       />
 
-      <BookingModal
-        loading={loading}
-        car={carData}
-        user={user}
-        bookModal={bookModal}
-        handleCancel={() => setBookModal(false)}
-      />
+      {user && (
+        <BookingModal
+          loading={loading}
+          car={carData}
+          user={user}
+          bookModal={bookModal}
+          handleCancel={() => setBookModal(false)}
+        />
+      )}
     </>
   );
 };

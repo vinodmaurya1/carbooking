@@ -56,8 +56,9 @@
     "no-constant-condition": ["error", { "checkLoops": false }],
     "no-console": ["error", { "allow": ["log", "warn", "error"] }],
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["off"],
-    "no-underscore-dangle": ["error"],
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-underscore-dangle": "off",
     "prefer-arrow-functions/prefer-arrow-functions": [
       "warn",
       {

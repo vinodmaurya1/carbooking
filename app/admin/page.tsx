@@ -8,7 +8,7 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Card, Table, Switch, Image, Space, Button, Modal, Tag } from "antd";
+import { Card, Table, Image, Space, Button, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store/store";
@@ -24,7 +24,7 @@ export default function Admin() {
   const [editModal, setEditModal] = useState(false);
   const [addData, setAddData] = useState(null);
   const { cars, loading } = useSelector((state: RootState) => state.cars);
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     dispatch(fetchCars());

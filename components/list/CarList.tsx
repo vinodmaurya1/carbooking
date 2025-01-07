@@ -54,7 +54,7 @@ const CarList = () => {
     }
   };
 
-  const handleFilterChange = (field: string, value: any) => {
+  const handleFilterChange = (field: string, value) => {
     setFilters((prev) => ({
       ...prev,
       [field]: value,
